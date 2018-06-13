@@ -1,143 +1,173 @@
 package ia.connect4.model;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement
-public class Board {
-	
+public class Board implements Cloneable {
+
 	@JsonProperty("a1")
 	private char a1;
-	
+
 	@JsonProperty("a2")
 	private char a2;
-	
+
 	@JsonProperty("a3")
 	private char a3;
-	
+
 	@JsonProperty("a4")
 	private char a4;
-	
+
 	@JsonProperty("a5")
 	private char a5;
-	
+
 	@JsonProperty("a6")
 	private char a6;
-	
-	
+
 	@JsonProperty("b1")
 	private char b1;
-	
+
 	@JsonProperty("b2")
 	private char b2;
-	
+
 	@JsonProperty("b3")
 	private char b3;
-	
+
 	@JsonProperty("b4")
 	private char b4;
-	
+
 	@JsonProperty("b5")
 	private char b5;
-	
+
 	@JsonProperty("b6")
 	private char b6;
-	
-	
+
 	@JsonProperty("c1")
 	private char c1;
-	
+
 	@JsonProperty("c2")
 	private char c2;
-	
+
 	@JsonProperty("c3")
 	private char c3;
-	
+
 	@JsonProperty("c4")
 	private char c4;
-	
+
 	@JsonProperty("c5")
 	private char c5;
-	
+
 	@JsonProperty("c6")
 	private char c6;
-	
-	
+
 	@JsonProperty("d1")
 	private char d1;
-	
+
 	@JsonProperty("d2")
 	private char d2;
-	
+
 	@JsonProperty("d3")
 	private char d3;
-	
+
 	@JsonProperty("d4")
 	private char d4;
-	
+
 	@JsonProperty("d5")
 	private char d5;
-	
+
 	@JsonProperty("d6")
 	private char d6;
-	
-	
+
 	@JsonProperty("e1")
 	private char e1;
-	
+
 	@JsonProperty("e2")
 	private char e2;
-	
+
 	@JsonProperty("e3")
 	private char e3;
-	
+
 	@JsonProperty("e4")
 	private char e4;
-	
+
 	@JsonProperty("e5")
 	private char e5;
-	
+
 	@JsonProperty("e6")
 	private char e6;
-	
-	
+
 	@JsonProperty("f1")
 	private char f1;
-	
+
 	@JsonProperty("f2")
 	private char f2;
-	
+
 	@JsonProperty("f3")
 	private char f3;
-	
+
 	@JsonProperty("f4")
 	private char f4;
-	
+
 	@JsonProperty("f5")
 	private char f5;
-	
+
 	@JsonProperty("f6")
 	private char f6;
-	
-	
+
 	@JsonProperty("g1")
 	private char g1;
-	
+
 	@JsonProperty("g2")
 	private char g2;
-	
+
 	@JsonProperty("g3")
 	private char g3;
-	
+
 	@JsonProperty("g4")
 	private char g4;
-	
+
 	@JsonProperty("g5")
 	private char g5;
-	
+
 	@JsonProperty("g6")
 	private char g6;
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	public ArrayList<Board> generatePlays() {
+		ArrayList<Board> plays = new ArrayList<Board>(7);
+		String rows = "abcdefg";
+		try {
+			for (int i = 0; i < rows.length(); i++) {
+				@SuppressWarnings("rawtypes")
+				Class boardClass = Class.forName("ia.connect4.model.Board");
+				Field f = boardClass.getDeclaredField(rows.charAt(i) + "6");
+				f.setAccessible(true);
+				if ((char) f.get(this) != 'b')
+					continue;
+
+				for (int j = 1; i < 7; j++) {
+					f = boardClass.getDeclaredField(rows.charAt(i) + "" + j);
+					f.setAccessible(true);
+					if ((char) f.get(this) == 'b') {
+						Board play = (Board) this.clone();
+						f.set(play, 'x');
+						plays.add(play);
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return plays;
+	}
 
 	public char getA1() {
 		return a1;
