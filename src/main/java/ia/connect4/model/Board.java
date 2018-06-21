@@ -7,6 +7,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+
 @XmlRootElement
 public class Board implements Cloneable {
 
@@ -140,8 +144,8 @@ public class Board implements Cloneable {
 		return super.clone();
 	}
 
-	public ArrayList<Board> generatePlays() {
-		ArrayList<Board> plays = new ArrayList<Board>(7);
+	public ArrayList<ColBoard> generatePlays() {
+		ArrayList<ColBoard> plays = new ArrayList<ColBoard>(7);
 		String rows = "abcdefg";
 		try {
 			for (int i = 0; i < rows.length(); i++) {
@@ -158,7 +162,7 @@ public class Board implements Cloneable {
 					if ((char) f.get(this) == 'b') {
 						Board play = (Board) this.clone();
 						f.set(play, 'x');
-						plays.add(play);
+						plays.add(new ColBoard(j-1,play));
 						break;
 					}
 				}
@@ -167,6 +171,60 @@ public class Board implements Cloneable {
 			// TODO: handle exception
 		}
 		return plays;
+	}
+	
+	public Instance toInstance(ArrayList<Attribute> attributes) {
+		Instance instance = new DenseInstance(42);
+		instance.setValue(attributes.get(0), this.a1);
+		instance.setValue(attributes.get(1), this.a2);
+		instance.setValue(attributes.get(2), this.a3);
+		instance.setValue(attributes.get(3), this.a4);
+		instance.setValue(attributes.get(4), this.a5);
+		instance.setValue(attributes.get(5), this.a6);
+		
+		instance.setValue(attributes.get(6), this.b1);
+		instance.setValue(attributes.get(7), this.b2);
+		instance.setValue(attributes.get(8), this.b3);
+		instance.setValue(attributes.get(9), this.b4);
+		instance.setValue(attributes.get(10), this.b5);
+		instance.setValue(attributes.get(11), this.b6);
+		
+		instance.setValue(attributes.get(12), this.c1);
+		instance.setValue(attributes.get(13), this.c2);
+		instance.setValue(attributes.get(14), this.c3);
+		instance.setValue(attributes.get(15), this.c4);
+		instance.setValue(attributes.get(16), this.c5);
+		instance.setValue(attributes.get(17), this.c6);
+		
+		instance.setValue(attributes.get(18), this.d1);
+		instance.setValue(attributes.get(19), this.d2);
+		instance.setValue(attributes.get(20), this.d3);
+		instance.setValue(attributes.get(21), this.d4);
+		instance.setValue(attributes.get(22), this.d5);
+		instance.setValue(attributes.get(23), this.d6);
+		
+		instance.setValue(attributes.get(24), this.e1);
+		instance.setValue(attributes.get(25), this.e2);
+		instance.setValue(attributes.get(26), this.e3);
+		instance.setValue(attributes.get(27), this.e4);
+		instance.setValue(attributes.get(28), this.e5);
+		instance.setValue(attributes.get(29), this.e6);
+		
+		instance.setValue(attributes.get(30), this.f1);
+		instance.setValue(attributes.get(31), this.f2);
+		instance.setValue(attributes.get(32), this.f3);
+		instance.setValue(attributes.get(33), this.f4);
+		instance.setValue(attributes.get(34), this.f5);
+		instance.setValue(attributes.get(35), this.f6);
+		
+		instance.setValue(attributes.get(36), this.g1);
+		instance.setValue(attributes.get(37), this.g2);
+		instance.setValue(attributes.get(38), this.g3);
+		instance.setValue(attributes.get(39), this.g4);
+		instance.setValue(attributes.get(40), this.g5);
+		instance.setValue(attributes.get(41), this.g6);
+		
+		return instance;
 	}
 
 	public char getA1() {

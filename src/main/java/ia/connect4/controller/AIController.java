@@ -5,17 +5,27 @@ import java.util.Random;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ia.connect4.model.Board;
+import ia.connect4.service.IAService;
 
 @RestController
 public class AIController {
 	
+	@Autowired
+	private IAService ia;
+	
 	@PostMapping("/getAiTurn")
 	public int getAiTurn(@Valid @RequestBody Board board) {
+		try {
+			ia.classify(board.generatePlays());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		ArrayList<Integer> al = new ArrayList<>(7);
 		if(board.getA6() == 'b')al.add(0);
 		if(board.getB6() == 'b')al.add(1);
