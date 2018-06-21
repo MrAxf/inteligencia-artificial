@@ -227,7 +227,6 @@ public class Board implements Cloneable {
 		instance.setValue(attributes.get(41), this.g6);
 		instance.setValue(attributes.get(42), "loss");
 		
-		int a =instance.classIndex();
 		
 		return instance;
 	}
