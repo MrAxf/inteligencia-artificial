@@ -1,16 +1,17 @@
 package ia.connect4.model;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
 
 @XmlRootElement
 public class Board implements Cloneable {
@@ -163,7 +164,7 @@ public class Board implements Cloneable {
 					if ((char) f.get(this) == 'b') {
 						Board play = (Board) this.clone();
 						f.set(play, 'x');
-						plays.add(new ColBoard(j-1,play));
+						plays.add(new ColBoard(i, play));
 						break;
 					}
 				}
@@ -174,61 +175,113 @@ public class Board implements Cloneable {
 		return plays;
 	}
 	
-	public Instance toInstance(ArrayList<Attribute> attributes, Instances itsc) {
-		Instance instance = new DenseInstance(43);
-		instance.setDataset(itsc);
-		instance.setValue(attributes.get(0), this.a1);
-		instance.setValue(attributes.get(1), this.a2);
-		instance.setValue(attributes.get(2), this.a3);
-		instance.setValue(attributes.get(3), this.a4);
-		instance.setValue(attributes.get(4), this.a5);
-		instance.setValue(attributes.get(5), this.a6);
+	public static Instances toInstances(ArrayList<ColBoard> plays) {
+		String instances = "@RELATION connect4"
+				+ "\n"
+				+ "\n@ATTRIBUTE a1 {x,o,b}"
+				+ "\n@ATTRIBUTE a2 {x,o,b}"
+				+ "\n@ATTRIBUTE a3 {x,o,b}"
+				+ "\n@ATTRIBUTE a4 {x,o,b}"
+				+ "\n@ATTRIBUTE a5 {x,o,b}"
+				+ "\n@ATTRIBUTE a6 {x,o,b}"
+				+ "\n@ATTRIBUTE b1 {x,o,b}"
+				+ "\n@ATTRIBUTE b2 {x,o,b}"
+				+ "\n@ATTRIBUTE b3 {x,o,b}"
+				+ "\n@ATTRIBUTE b4 {x,o,b}"
+				+ "\n@ATTRIBUTE b5 {x,o,b}"
+				+ "\n@ATTRIBUTE b6 {x,o,b}"
+				+ "\n@ATTRIBUTE c1 {x,o,b}"
+				+ "\n@ATTRIBUTE c2 {x,o,b}"
+				+ "\n@ATTRIBUTE c3 {x,o,b}"
+				+ "\n@ATTRIBUTE c4 {x,o,b}"
+				+ "\n@ATTRIBUTE c5 {x,o,b}"
+				+ "\n@ATTRIBUTE c6 {x,o,b}"
+				+ "\n@ATTRIBUTE d1 {x,o,b}"
+				+ "\n@ATTRIBUTE d2 {x,o,b}"
+				+ "\n@ATTRIBUTE d3 {x,o,b}"
+				+ "\n@ATTRIBUTE d4 {x,o,b}"
+				+ "\n@ATTRIBUTE d5 {x,o,b}"
+				+ "\n@ATTRIBUTE d6 {x,o,b}"
+				+ "\n@ATTRIBUTE e1 {x,o,b}"
+				+ "\n@ATTRIBUTE e2 {x,o,b}"
+				+ "\n@ATTRIBUTE e3 {x,o,b}"
+				+ "\n@ATTRIBUTE e4 {x,o,b}"
+				+ "\n@ATTRIBUTE e5 {x,o,b}"
+				+ "\n@ATTRIBUTE e6 {x,o,b}"
+				+ "\n@ATTRIBUTE f1 {x,o,b}"
+				+ "\n@ATTRIBUTE f2 {x,o,b}"
+				+ "\n@ATTRIBUTE f3 {x,o,b}"
+				+ "\n@ATTRIBUTE f4 {x,o,b}"
+				+ "\n@ATTRIBUTE f5 {x,o,b}"
+				+ "\n@ATTRIBUTE f6 {x,o,b}"
+				+ "\n@ATTRIBUTE g1 {x,o,b}"
+				+ "\n@ATTRIBUTE g2 {x,o,b}"
+				+ "\n@ATTRIBUTE g3 {x,o,b}"
+				+ "\n@ATTRIBUTE g4 {x,o,b}"
+				+ "\n@ATTRIBUTE g5 {x,o,b}"
+				+ "\n@ATTRIBUTE g6 {x,o,b}"
+				+ "\n@ATTRIBUTE class {win,loss,draw}"
+				+ "\n\n@DATA";
 		
-		instance.setValue(attributes.get(6), this.b1);
-		instance.setValue(attributes.get(7), this.b2);
-		instance.setValue(attributes.get(8), this.b3);
-		instance.setValue(attributes.get(9), this.b4);
-		instance.setValue(attributes.get(10), this.b5);
-		instance.setValue(attributes.get(11), this.b6);
+		for (Iterator<ColBoard> iterator = plays.iterator(); iterator.hasNext();) {
+			ColBoard colBoard = iterator.next();
+			Board board = colBoard.getBoard();
+			instances+="\n"
+					+ board.getA1() + ","
+					+ board.getA2() + ","
+					+ board.getA3() + ","
+					+ board.getA4() + ","
+					+ board.getA5() + ","
+					+ board.getA6() + ","
+					+ board.getB1() + ","
+					+ board.getB2() + ","
+					+ board.getB3() + ","
+					+ board.getB4() + ","
+					+ board.getB5() + ","
+					+ board.getB6() + ","
+					+ board.getC1() + ","
+					+ board.getC2() + ","
+					+ board.getC3() + ","
+					+ board.getC4() + ","
+					+ board.getC5() + ","
+					+ board.getC6() + ","
+					+ board.getD1() + ","
+					+ board.getD2() + ","
+					+ board.getD3() + ","
+					+ board.getD4() + ","
+					+ board.getD5() + ","
+					+ board.getD6() + ","
+					+ board.getE1() + ","
+					+ board.getE2() + ","
+					+ board.getE3() + ","
+					+ board.getE4() + ","
+					+ board.getE5() + ","
+					+ board.getE6() + ","
+					+ board.getF1() + ","
+					+ board.getF2() + ","
+					+ board.getF3() + ","
+					+ board.getF4() + ","
+					+ board.getF5() + ","
+					+ board.getF6() + ","
+					+ board.getG1() + ","
+					+ board.getG2() + ","
+					+ board.getG3() + ","
+					+ board.getG4() + ","
+					+ board.getG5() + ","
+					+ board.getG6() + ",win";
+			
+		}
 		
-		instance.setValue(attributes.get(12), this.c1);
-		instance.setValue(attributes.get(13), this.c2);
-		instance.setValue(attributes.get(14), this.c3);
-		instance.setValue(attributes.get(15), this.c4);
-		instance.setValue(attributes.get(16), this.c5);
-		instance.setValue(attributes.get(17), this.c6);
+		Instances set = null;
+		try {
+			set = DataSource.read(new ByteArrayInputStream(instances.getBytes(StandardCharsets.UTF_8)));
+			set.setClassIndex(set.numAttributes() - 1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		instance.setValue(attributes.get(18), this.d1);
-		instance.setValue(attributes.get(19), this.d2);
-		instance.setValue(attributes.get(20), this.d3);
-		instance.setValue(attributes.get(21), this.d4);
-		instance.setValue(attributes.get(22), this.d5);
-		instance.setValue(attributes.get(23), this.d6);
-		
-		instance.setValue(attributes.get(24), this.e1);
-		instance.setValue(attributes.get(25), this.e2);
-		instance.setValue(attributes.get(26), this.e3);
-		instance.setValue(attributes.get(27), this.e4);
-		instance.setValue(attributes.get(28), this.e5);
-		instance.setValue(attributes.get(29), this.e6);
-		
-		instance.setValue(attributes.get(30), this.f1);
-		instance.setValue(attributes.get(31), this.f2);
-		instance.setValue(attributes.get(32), this.f3);
-		instance.setValue(attributes.get(33), this.f4);
-		instance.setValue(attributes.get(34), this.f5);
-		instance.setValue(attributes.get(35), this.f6);
-		
-		instance.setValue(attributes.get(36), this.g1);
-		instance.setValue(attributes.get(37), this.g2);
-		instance.setValue(attributes.get(38), this.g3);
-		instance.setValue(attributes.get(39), this.g4);
-		instance.setValue(attributes.get(40), this.g5);
-		instance.setValue(attributes.get(41), this.g6);
-		instance.setValue(attributes.get(42), "loss");
-		
-		
-		return instance;
+		return set;
 	}
 
 	public char getA1() {
