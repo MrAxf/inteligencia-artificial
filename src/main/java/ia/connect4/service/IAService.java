@@ -13,11 +13,13 @@ import org.springframework.stereotype.Service;
 
 import ia.connect4.model.ColBoard;
 import weka.classifiers.Classifier;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
+import weka.core.converters.ConverterUtils.DataSource;
 
 @Service
 public class IAService {
@@ -33,23 +35,30 @@ public class IAService {
 		
 		itcs.clear();
 		
-		for (Iterator<ColBoard> iterator = plays.iterator(); iterator.hasNext();) {
+		/*for (Iterator<ColBoard> iterator = plays.iterator(); iterator.hasNext();) {
 			ColBoard play = iterator.next();
-			itcs.add(play.getBoard().toInstance(instanceAttributes));
+			itcs.add(play.getBoard().toInstance(instanceAttributes, itcs));
 		}
 		
 		for (Iterator<Instance> iterator = itcs.iterator(); iterator.hasNext();) {
 			Instance instance = iterator.next();
-			results.add(cls.classifyInstance(instance));
+			double result = cls.classifyInstance(instance);
+			results.add(result);
 		}
 		
-		return results.get(0).intValue();
+		return results.get(0).intValue();*/
+		Instances src = DataSource.read(new FileInputStream(new File("C:\\modelos\\connect-4.arff")));
+		src.setClassIndex(src.numAttributes() - 1);
+		double result = cls.classifyInstance(src.get(0));
+		String s = src.classAttribute().value((int)result);
+		System.out.println(src.classAttribute().value((int)result));
+		return 0;
 	}
 	
 	private Classifier getClassifier() throws IOException, Exception {
 		if(classifier != null) return classifier;
 
-		classifier = (MultilayerPerceptron) SerializationHelper.read("C:\\modelos\\42-42-42-42.model");
+		classifier = (NaiveBayes) SerializationHelper.read("C:\\modelos\\example.model");
 
 		return classifier;
 	}
@@ -110,21 +119,16 @@ public class IAService {
 		attributes.add(new Attribute("g5", boardSpace));
 		attributes.add(new Attribute("g6", boardSpace));
 		
+		ArrayList<String> classes = new ArrayList<String>(3);
+		classes.add("win");
+		classes.add("loss");
+		classes.add("draw");
+		
+		attributes.add(new Attribute("Class", classes));
+		
 		instanceAttributes = attributes;
 		
-		ArrayList<String> classes = new ArrayList<String>(3);
-		boardSpace.add("win");
-		boardSpace.add("loss");
-		boardSpace.add("draw");
-		
-		
-		Attribute Class = new Attribute("Class", classes);
-		
-		ArrayList<Attribute> instancesAttributes = new ArrayList<Attribute>(attributes);
-		
-		instancesAttributes.add(Class);
-		
-		instances = new Instances("connect4", instancesAttributes, 7);
+		instances = new Instances("connect4", attributes, 7);
 		
 		return instances;
 	}

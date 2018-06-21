@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
+import weka.core.Instances;
 
 @XmlRootElement
 public class Board implements Cloneable {
@@ -173,8 +174,9 @@ public class Board implements Cloneable {
 		return plays;
 	}
 	
-	public Instance toInstance(ArrayList<Attribute> attributes) {
-		Instance instance = new DenseInstance(42);
+	public Instance toInstance(ArrayList<Attribute> attributes, Instances itsc) {
+		Instance instance = new DenseInstance(43);
+		instance.setDataset(itsc);
 		instance.setValue(attributes.get(0), this.a1);
 		instance.setValue(attributes.get(1), this.a2);
 		instance.setValue(attributes.get(2), this.a3);
@@ -223,6 +225,9 @@ public class Board implements Cloneable {
 		instance.setValue(attributes.get(39), this.g4);
 		instance.setValue(attributes.get(40), this.g5);
 		instance.setValue(attributes.get(41), this.g6);
+		instance.setValue(attributes.get(42), "loss");
+		
+		int a =instance.classIndex();
 		
 		return instance;
 	}
