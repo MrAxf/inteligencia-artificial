@@ -3,7 +3,9 @@ package ia.connect4.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 import ia.connect4.model.Board;
 import ia.connect4.model.ColBoard;
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -26,7 +28,7 @@ public class IAService {
 
 	public int classify(ArrayList<ColBoard> plays) throws Exception {
 		Classifier cls = getClassifier();
-		ArrayList<Double> results = new ArrayList<Double>(7);
+		ArrayList<String> results = new ArrayList<String>(7);
 		
 		Instances instances = Board.toInstances(plays);
 		
@@ -34,7 +36,7 @@ public class IAService {
 		for (Iterator<Instance> iterator = instances.iterator(); iterator.hasNext();) {
 			Instance instance = iterator.next();
 			double result = cls.classifyInstance(instance);
-			results.add(result);
+			results.add(instances.classAttribute().value((int)result));
 		}
 		
 		String last = "";
@@ -42,13 +44,22 @@ public class IAService {
 		
 		int i = 0;
 		String classValue = "";
-		for (Iterator<Double> iterator = results.iterator(); iterator.hasNext();) {
-			Double res = iterator.next();
-			classValue = instances.classAttribute().value(res.intValue());
-			if(last.isEmpty() || (!last.equals(classValue) && last.equals("loss"))) {
+		long seed = System.nanoTime();
+		Collections.shuffle(results, new Random(seed));
+		Collections.shuffle(plays, new Random(seed));
+		for (Iterator<String> iterator = results.iterator(); iterator.hasNext();) {
+			classValue = iterator.next();
+			if(last.isEmpty()) {
 				last = classValue;
 				column = plays.get(i).getCol();
 				if(last.equals("win")) break;
+			}else if(classValue.equals("win")) {
+				last = classValue;
+				column = plays.get(i).getCol();
+				break;
+			} else if(last.equals("loss") && classValue.equals("draw")) {
+				last = classValue;
+				column = plays.get(i).getCol();
 			}
 			i++;
 			
@@ -60,7 +71,7 @@ public class IAService {
 	private Classifier getClassifier() throws IOException, Exception {
 		if(classifier != null) return classifier;
 
-		classifier = (NaiveBayes) SerializationHelper.read(modelsPath+"example.model");
+		classifier = (MultilayerPerceptron) SerializationHelper.read(modelsPath+"505050.model");
 
 		return classifier;
 	}
