@@ -13,9 +13,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
+/**
+ * 
+ * Clase que contiene todos los datos del tablero en un momento concreto
+ * (el estado de cada una de las posiciones del tablero).
+ */
 @XmlRootElement
 public class Board implements Cloneable {
 
+	/**
+	 * Posiciones del tablero
+	 * 6 . . . . . . .
+       5 . . . . . . .
+       4 . . . . . . .
+       3 . . . . . . .
+       2 . . . . . . .
+       1 . . . . . . .
+         a b c d e f g
+	 */
 	@JsonProperty("a1")
 	private char a1;
 
@@ -142,14 +157,24 @@ public class Board implements Cloneable {
 	@JsonProperty("g6")
 	private char g6;
 
+	/**
+	 * Clona el tablero
+	 */
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
+	/**
+	 * Genera todas las posibles jugadas de la IA a partir del tablero actual
+	 * @return Lista de las posibles jugadas de la inteligencia artificial.
+	 */
 	public ArrayList<ColBoard> generatePlays() {
 		ArrayList<ColBoard> plays = new ArrayList<ColBoard>(7);
 		String rows = "abcdefg";
 		try {
+			//El bucle itera sobre todos los atributos (posiciones) del tablero por el nombre de estos
+			//y en función de su contenido va clonando el tablero actual para insertar la ficha
+			//de la inteligencia artificial en su casilla correspondiente
 			for (int i = 0; i < rows.length(); i++) {
 				@SuppressWarnings("rawtypes")
 				Class boardClass = Class.forName("ia.connect4.model.Board");
@@ -170,12 +195,19 @@ public class Board implements Cloneable {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return plays;
 	}
 	
+	/**
+	 * Convierte las jugadas de la inteligencia artificial en un Objeto Instances de WEKA
+	 * para que estas jugadas puedan ser clasificadas.
+	 * @param plays Lista de jugadas de la IA
+	 * @return Objeto Instances de WEKA. 
+	 */
 	public static Instances toInstances(ArrayList<ColBoard> plays) {
+		//Escribimos las posibles jugadas de la IA como si fuera un archivo .arff.
 		String instances = "@RELATION connect4"
 				+ "\n"
 				+ "\n@ATTRIBUTE a1 {x,o,b}"
@@ -274,6 +306,7 @@ public class Board implements Cloneable {
 		
 		Instances set = null;
 		try {
+			//Convertimos la cadena de caracteres en un Objeto Instances de WEKA.
 			set = DataSource.read(new ByteArrayInputStream(instances.getBytes(StandardCharsets.UTF_8)));
 			set.setClassIndex(set.numAttributes() - 1);
 		} catch (Exception e) {
@@ -283,6 +316,8 @@ public class Board implements Cloneable {
 		
 		return set;
 	}
+	
+	//Getters y Setters...
 
 	public char getA1() {
 		return a1;

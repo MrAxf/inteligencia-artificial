@@ -1,8 +1,21 @@
 package ia.connect4.model;
 
+/**
+ * 
+ * Conjunto del tablero resultante de una jugada realizada por la IA y la columna donde la IA
+ * ha jugado su ficha.
+ *
+ */
 public class ColBoard {
 	
+	/**
+	 * Columna de la jugada
+	 */
 	private int col;
+	
+	/**
+	 * Tablero con la jugada
+	 */
 	private Board board;
 	
 	public ColBoard(int col, Board board) {
